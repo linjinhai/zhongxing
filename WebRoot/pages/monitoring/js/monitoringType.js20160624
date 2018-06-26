@@ -1,0 +1,796 @@
+var path = null;
+$(function() {
+	path = $("#path").val();
+	$("#section_img_0").css("display", "");//默认显示第一张截面图
+	$("#section_table_0").css("display", "");//默认显示第一张TABLE截面传感器集合
+	dwr.engine.setActiveReverseAjax(true);
+	dwr.engine._errorHandler = function(message, ex) {
+		dwr.engine._debug("Error: " + ex.name + ", " + ex.message, true);
+	};
+	Highcharts.setOptions({
+		global : {
+			useUTC : false
+		}
+	});
+});
+var chart = null;
+var chartLs1 = null;//过去1小时曲线
+var chartLs5 = null;//过去5小时曲线
+var chartLs10 = null;//过去10小时曲线
+var chartPj = null;//平均值曲线
+window['chart1'] = null;
+//切换截面图
+function changeSection(t) {
+	for (var i = 0; i < 200; i++) {
+		$("#section_img_" + i).css("display", "none");
+		$("#section_table_" + i).css("display", "none");
+	}
+	$("#section_img_" + t).css("display", "");
+	$("#section_table_" + t).css("display", "");
+}
+//初始化曲线图
+function dw() {
+	var pointsizearray = getSjd($("#gu").val().split("^")[0]);
+	var plotLines = getYjz($("#gu").val().split("^")[0]);
+	chart = new Highcharts.Chart({
+		chart : {
+			renderTo : 'hcharts',
+			marginRight : 10,
+			animation : Highcharts.svg
+		// don't animate in old IE
+		},
+		//chart end 
+		title : {
+			text : $("#type_name").val() + '实时曲线'
+		//x: -20 //center
+		},
+		credits : {
+			enabled : false
+		},
+		subtitle : {
+			text : '编号：' + $("#gu").val().split("^")[1] + ',位置：' + $("#gu").val().split("^")[3],
+			x : -20
+		},
+		xAxis : {
+			type : "datetime",
+			tickPixelInterval : 70,
+			dateTimeLabelFormats : {
+				hour : '%m/%e %H',
+			//day : '%m/%e',
+			//month : '%Y/%m',
+			//year : '%Y'
+			}
+		},
+		plotOptions : {
+			// 实时动态曲线的属性
+			series : {
+				cursor : 'pointer'
+			},
+			// 设置点与线的属性
+			line : {
+				allowPointSelect : true,
+				// 是否允许选中点
+				animation : true,
+				// 是否在显示报表的时候使用动画
+				cursor : 'pointer',
+				// 鼠标放在点上的时候显示的形状
+				dataLabels : {
+					enabled : false,
+					// 是否在点的旁边显示数据
+					rotation : 0
+				},
+				enableMouseTracking : true,
+				// 鼠标放上去是否显示那个小方框
+				marker : {
+					enabled : true,
+					// 是否显示点
+					radius : 1,
+					// 点的半径
+					states : {
+						hover : {
+							enabled : true
+						// 鼠标放上去点是否放大
+						},
+						select : {
+							enabled : true
+						// 控制鼠标选中点时候的状态
+						}
+					}
+				},
+				states : {
+					hover : {
+						enabled : true,
+						// 鼠标放上去线的状态控制
+						lineWidth : 1.0
+					}
+				},
+				stickyTracking : true,
+				// 跟踪
+				visible : true,
+				lineWidth : 1.6
+			// 线条粗细
+			// pointStart:100
+			}
+		},
+		yAxis : {
+			title : {
+				text : '单位：' + $("#gu").val().split("^")[2],
+				align : 'high',
+				rotation : 0,
+				offset : -30,
+				y : -10
+			},
+			//tickPixelInterval : 15,
+			/*
+			plotLines: [{
+			    value: 85,
+			    width: 1,
+			   color : 'red'
+			}]*/
+			plotLines : plotLines,
+			 labels: {
+                 formatter: function() {
+                     return this.value.toFixed($("#gu").val().split("^")[4]);//这里是两位小数，你要几位小数就改成几
+                 },
+                 style: {
+                     color: 'black'
+                 }
+             }
+
+		},
+		tooltip : {
+			formatter : function() {
+				return '<b>' + this.series.name + '<br/>' + '时间：' + Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' + '实时数据：' + Highcharts.numberFormat(this.y,$("#gu").val().split("^")[4]) + ' ' + $("#gu").val().split("^")[2] + '</b>';
+			}
+		},
+		legend : {
+			enabled : false
+		},
+		exporting : {
+			enabled : false
+		},
+		series : [ {
+			//color : "blue",
+			name : $("#gu").val().split("^")[1],
+			data : pointsizearray
+		} ]
+	});
+	$("#loading").css("display","none");
+	LsSjd($("#gu").val().split("^")[0], 1);$("#loading_ls1").css("display","none");//切换过去1小时曲线
+	LsSjd($("#gu").val().split("^")[0], 5);$("#loading_ls2").css("display","none");//切换过去5小时曲线
+	LsSjd($("#gu").val().split("^")[0], 10);$("#loading_ls3").css("display","none");//切换过去10小时曲线
+	LsSjdPj($("#gu").val().split("^")[0]);$("#loading_pjz").css("display","none");//切换平均值曲线
+}
+//根据传感器id重置所有曲线图
+function refDraw(c) {
+	$("#gu").val(c);
+	dw();
+
+}
+//setInterval( " showTime() " , 2000 );
+
+function showTime() {
+	chart.series[0].addPoint([ (new Date()).getTime(), parseFloat(Math.floor(Math.random() * 10)) ], true, true);
+	for (var i = 0; i < 200; i++) {
+		if (window['charts' + i]) {
+			window['charts' + i].series[0].addPoint([ (new Date()).getTime(), parseFloat(Math.floor(Math.random() * 10)) ], true, true);
+		}
+	}
+}
+for (var i = 0; i < 3; i++) {
+	window['a' + i] = i + 'i';
+}
+//打开独立传感器曲线图
+function thn(c) {
+	var pointsizearray = getSjd(c.split("^")[0]);
+	var plotLines = getYjz(c.split("^")[0]);
+	window['charts' + c.split("^")[0]] = new Highcharts.Chart({
+		chart : {
+			renderTo : 'div_chart_' + c.split("^")[0],
+			marginRight : 10,
+			animation : Highcharts.svg
+		// don't animate in old IE
+		},
+		//chart end 
+		title : {
+			text : $("#type_name").val() + '实时曲线'
+		//x: -20 //center
+		},
+		credits : {
+			enabled : false
+		},
+		subtitle : {
+			text : '编号：' + c.split("^")[1] + ',位置：' + c.split("^")[3],
+			x : -20
+		},
+		xAxis : {
+			type : "datetime",
+			tickPixelInterval : 100,
+			dateTimeLabelFormats : {
+				hour : '%m/%e %H',
+			//day : '%m/%e',
+			//month : '%Y/%m',
+			//year : '%Y'
+			}
+		},
+		plotOptions : {
+			// 实时动态曲线的属性
+			series : {
+				cursor : 'pointer'
+			},
+			// 设置点与线的属性
+			line : {
+				allowPointSelect : true,
+				// 是否允许选中点
+				animation : true,
+				// 是否在显示报表的时候使用动画
+				cursor : 'pointer',
+				// 鼠标放在点上的时候显示的形状
+				dataLabels : {
+					enabled : false,
+					// 是否在点的旁边显示数据
+					rotation : 0
+				},
+				enableMouseTracking : true,
+				// 鼠标放上去是否显示那个小方框
+				marker : {
+					enabled : true,
+					// 是否显示点
+					radius : 1,
+					// 点的半径
+					states : {
+						hover : {
+							enabled : true
+						// 鼠标放上去点是否放大
+						},
+						select : {
+							enabled : true
+						// 控制鼠标选中点时候的状态
+						}
+					}
+				},
+				states : {
+					hover : {
+						enabled : true,
+						// 鼠标放上去线的状态控制
+						lineWidth : 1.0
+					}
+				},
+				stickyTracking : true,
+				// 跟踪
+				visible : true,
+				lineWidth : 1.6
+			// 线条粗细
+			// pointStart:100
+			}
+		},
+		yAxis : {
+			title : {
+				text : '单位：' + c.split("^")[2],
+				align : 'high',
+				rotation : 0,
+				offset : -30,
+				y : -10
+			},
+			//tickPixelInterval : 15,
+			/*
+			plotLines: [{
+			    value: 85,
+			    width: 1,
+			   color : 'red'
+			}]*/
+			plotLines : plotLines,
+			 labels: {
+                 formatter: function() {
+                     return this.value.toFixed(c.split("^")[4]);//这里是两位小数，你要几位小数就改成几
+                 },
+                 style: {
+                     color: 'black'
+                 }
+             }
+
+		},
+		tooltip : {
+			formatter : function() {
+				return '<b>' + this.series.name + '<br/>' + '时间：' + Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' + '实时数据：' + Highcharts.numberFormat(this.y,c.split("^")[4]) + ' ' + c.split("^")[2] + '</b>';
+			}
+		},
+		legend : {
+			enabled : false
+		},
+		exporting : {
+			enabled : false
+		},
+		series : [ {
+			//color : "blue",
+			name : c.split("^")[1],
+			data : pointsizearray
+		} ]
+	});
+}
+//打开/关闭 独立曲线图 
+function jui(c) {
+	if ($("#div_chart_" + c.split("^")[0]).parent().parent().css('display') == 'none') {
+		$("#div_chart_" + c.split("^")[0]).parent().parent().fadeIn(2000);
+		thn(c);
+	} else {
+		$("#div_chart_" + c.split("^")[0]).parent().parent().fadeOut(1200);
+	}
+	
+	if($('#mn'+c.split("^")[0]).text()=='展开'){
+		$('#mn'+c.split("^")[0]).text('关闭');
+	}else{
+		$('#mn'+c.split("^")[0]).text('展开');
+	}
+}
+
+// 获取初始50个数据点
+function getSjd(sensor_id) {
+	var pointsizearray = new Array();
+	$.ajax({
+		type : "POST",
+		async : false,
+		url : path + "/monitoringController/getTop50?sensor_id=" + sensor_id,
+		dataType : "json",
+		success : function(data) {
+			if (data.length == 0) {
+				for (var i = -100; i <= 0; i++) {
+					pointsizearray.push([ (new Date()).getTime()+(i*Number($("#gu").val().split("^")[5])*1000), null ]);
+				}
+			} else {
+				for (var i = 0; i < data.length; i++) {
+					pointsizearray.push([ (new Date((data[i].S).replace(/-/g, "/"))).getTime(), parseFloat(data[i].A) ]);
+				}
+			}
+		}
+	});
+	return pointsizearray;
+}
+// 获取预警值
+function getYjz(sensor_id) {
+	var plotLines = [];
+	$.ajax({
+		type : "POST",
+		async : false,
+		url : path + "/monitoringController/getWaringVal?sensor_id=" + sensor_id,
+		dataType : "json",
+		success : function(data) {
+
+			if (data[0].WARN_LV1 != null && data[0].WARN_LV1 != '') {
+				var resultSeriesData1 = {
+					color : 'yellow',
+					width : 3,
+					value : data[0].WARN_LV1,
+					label : {
+						// text : '1级预警',
+						align : 'right'
+					}
+				}
+				plotLines.push(resultSeriesData1);
+				$("#s1").attr('value', data[0].WARN_LV1);
+			}
+			if (data[0].WARN_LV11 != null && data[0].WARN_LV11 != '') {
+				var resultSeriesData1_1 = {
+					color : 'yellow',
+					width : 3,
+					value : data[0].WARN_LV11,
+					label : {
+						// text : '1级预警',
+						align : 'right'
+					}
+				}
+				plotLines.push(resultSeriesData1_1);
+				$("#x1").attr('value', data[0].WARN_LV11);
+			}
+			if (data[0].WARN_LV2 != null && data[0].WARN_LV2 != '') {
+				var resultSeriesData2 = {
+					color : '#ffa909',
+					width : 3,
+					value : data[0].WARN_LV2,
+					label : {
+						// text : '2级预警',
+						align : 'right'
+					}
+				}
+				plotLines.push(resultSeriesData2);
+				$("#s2").attr('value', data[0].WARN_LV2);
+			}
+			if (data[0].WARN_LV22 != null && data[0].WARN_LV22 != '') {
+				var resultSeriesData2_2 = {
+					color : '#ffa909',
+					width : 3,
+					value : data[0].WARN_LV22,
+					label : {
+						// text : '2级预警',
+						align : 'right'
+					}
+				}
+				plotLines.push(resultSeriesData2_2);
+				$("#x2").attr('value', data[0].WARN_LV22);
+			}
+			if (data[0].WARN_LV3 != null && data[0].WARN_LV3 != '') {
+				var resultSeriesData3 = {
+					color : 'red',
+					width : 3,
+					value : data[0].WARN_LV3,
+					label : {
+						// text : '3级预警',
+						align : 'right'
+					}
+				}
+				plotLines.push(resultSeriesData3);
+				$("#s3").attr('value', data[0].WARN_LV3);
+			}
+			if (data[0].WARN_LV33 != null && data[0].WARN_LV33 != '') {
+				var resultSeriesData3_3 = {
+					color : 'red',
+					width : 3,
+					value : data[0].WARN_LV33,
+					label : {
+						// text : '3级预警',
+						align : 'right'
+					}
+				}
+				plotLines.push(resultSeriesData3_3);
+				$("#x3").attr('value', data[0].WARN_LV33);
+			}
+
+		}
+
+	});
+
+	return plotLines;
+}
+// 获取历史 1，5,10小时数据点
+function getSjdLs(sensor_id, last_flag) {
+	var pointsizearray = new Array();
+	$.ajax({
+		type : "POST",
+		async : false,
+		url : path + "/monitoringController/getDataForLast?last_flag=" + last_flag + "&sensor_id=" + sensor_id,
+		dataType : "json",
+		success : function(data) {
+			if (data.length == 0) {
+				for (var i = -100; i <= 0; i++) {
+					pointsizearray.push([ (new Date()).getTime()+(i*Number($("#gu").val().split("^")[5])*1000), null ]);
+				}
+			} else {
+				for (var i = 0; i < data.length; i++) {
+					pointsizearray.push([ (new Date((data[i].S).replace(/-/g, "/"))).getTime(), parseFloat(data[i].A) ]);
+				}
+			}
+		}
+	});
+	return pointsizearray;
+}
+//根据id获取过去传感器数据集合   
+function LsSjd(sensor_id, last_flag) {
+	var pointsizearray = getSjdLs(sensor_id, last_flag);
+	var plotLines = getYjz(sensor_id);
+	var kj, kl, ko = null;
+	if (last_flag == '1') {
+		kj = 'chartLs1';
+		kl = 'ch1';
+		ko = '过去一小时';
+	} else if (last_flag == '5') {
+		kj = 'chartLs5';
+		kl = 'ch2';
+		ko = '过去五小时';
+	} else if (last_flag == '10') {
+		kj = 'chartLs10';
+		kl = 'ch3';
+		ko = '过去十小时';
+	}
+	
+	window['' + kj] = new Highcharts.Chart({
+		chart : {
+			renderTo : kl,
+			marginRight : 10,
+			animation : Highcharts.svg
+		// don't animate in old IE
+		},
+		// chart end
+		title : {
+			text : ko
+		// x: -20 //center
+		},
+		credits : {
+			enabled : false
+		},
+		subtitle : {
+			text : '编号：' + $("#gu").val().split("^")[1] + ',位置：' + $("#gu").val().split("^")[3],
+		 x: 20
+		},
+		xAxis : {
+			type : "datetime",
+			tickPixelInterval : 70,
+			dateTimeLabelFormats : {
+				hour : '%m/%e %H',
+			// day : '%m/%e',
+			// month : '%Y/%m',
+			// year : '%Y'
+			}
+		},
+		plotOptions : {
+			// 实时动态曲线的属性
+			series : {
+				cursor : 'pointer'
+			},
+			// 设置点与线的属性
+			line : {
+				allowPointSelect : true,
+				// 是否允许选中点
+				animation : true,
+				// 是否在显示报表的时候使用动画
+				cursor : 'pointer',
+				// 鼠标放在点上的时候显示的形状
+				dataLabels : {
+					enabled : false,
+					// 是否在点的旁边显示数据
+					rotation : 0
+				},
+				enableMouseTracking : true,
+				// 鼠标放上去是否显示那个小方框
+				marker : {
+					enabled : true,
+					// 是否显示点
+					radius : 1,
+					// 点的半径
+					states : {
+						hover : {
+							enabled : true
+						// 鼠标放上去点是否放大
+						},
+						select : {
+							enabled : true
+						// 控制鼠标选中点时候的状态
+						}
+					}
+				},
+				states : {
+					hover : {
+						enabled : true,
+						// 鼠标放上去线的状态控制
+						lineWidth : 1.0
+					}
+				},
+				stickyTracking : true,
+				// 跟踪
+				visible : true,
+				lineWidth : 1.6
+			// 线条粗细
+			// pointStart:100
+			}
+		},
+		yAxis : {
+			title : {
+				text : '单位：' + $("#gu").val().split("^")[2],
+				align : 'high',
+				rotation : 0,
+				offset : -30,
+				y : -10
+			},
+			//tickPixelInterval : 15,
+			/*
+			 * plotLines: [{ value: 85, width: 1, color : 'red' }]
+			 */
+			plotLines : plotLines,
+			 labels: {
+                 formatter: function() {
+                     return this.value.toFixed($("#gu").val().split("^")[4]);//这里是两位小数，你要几位小数就改成几
+                 },
+                 style: {
+                     color: 'black'
+                 }
+             }
+
+		},
+		tooltip : {
+			formatter : function() {
+				return '<b>' + this.series.name + '<br/>' + '时间：' + Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' + '实时数据：' + Highcharts.numberFormat(this.y,$("#gu").val().split("^")[4]) + ' ' + $("#gu").val().split("^")[2] + '</b>';
+			}
+		},
+		legend : {
+			enabled : false
+		},
+		exporting : {
+			enabled : false
+		},
+		series : [ {
+			//color : "blue",
+			name : $("#gu").val().split("^")[1],
+			data : pointsizearray
+		} ]
+	});
+
+}
+//获取实时平均值数据
+function getSjdSsPj(sensor_id) {
+	var pointsizearray = new Array();
+	$.ajax({
+		type : "POST",
+		async : false,
+		url : path + "/monitoringController/getTodaySs?&sensor_id=" + sensor_id,
+		dataType : "json",
+		success : function(data) {
+			var d = new Date();
+			if(data.length==0){
+				for(var i=-24;i<0;i++){
+					pointsizearray.push([ d.getTime()+(i*1000*60*60), null ]);
+				}
+			}else{
+				for (var i = 0; i < data.length; i++) {
+					pointsizearray.push([ (new Date((data[i].S+":00:00").replace(/-/g, "/"))).getTime(), parseFloat(data[i].A) ]);
+				}
+			}
+				
+			
+		}
+	});
+	return pointsizearray;
+}
+//更新传感器平均值曲线图
+function LsSjdPj(sensor_id) {
+	var pointsizearray = getSjdSsPj(sensor_id);
+	var plotLines = getYjz(sensor_id);
+	
+
+	chartPj = new Highcharts.Chart({
+		chart : {
+			renderTo : 'sspjz',
+			marginRight : 10,
+			animation : Highcharts.svg
+		// don't animate in old IE
+		},
+		// chart end
+		title : {
+			text : $("#type_name").val()+'时均值曲线'
+		// x: -20 //center
+		},
+		credits : {
+			enabled : false
+		},
+		subtitle : {
+			text : '编号：' + $("#gu").val().split("^")[1] + ',位置：' + $("#gu").val().split("^")[3],
+		// x: -20
+		},
+		xAxis : {
+			type : "datetime",
+			tickPixelInterval : 70,
+			dateTimeLabelFormats : {
+				hour : '%m/%e %H',
+			// day : '%m/%e',
+			// month : '%Y/%m',
+			// year : '%Y'
+			}
+		},
+		plotOptions : {
+			// 实时动态曲线的属性
+			series : {
+				cursor : 'pointer'
+			},
+			// 设置点与线的属性
+			line : {
+				allowPointSelect : true,
+				// 是否允许选中点
+				animation : true,
+				// 是否在显示报表的时候使用动画
+				cursor : 'pointer',
+				// 鼠标放在点上的时候显示的形状
+				dataLabels : {
+					enabled : false,
+					// 是否在点的旁边显示数据
+					rotation : 0
+				},
+				enableMouseTracking : true,
+				// 鼠标放上去是否显示那个小方框
+				marker : {
+					enabled : true,
+					// 是否显示点
+					radius : 1,
+					// 点的半径
+					states : {
+						hover : {
+							enabled : true
+						// 鼠标放上去点是否放大
+						},
+						select : {
+							enabled : true
+						// 控制鼠标选中点时候的状态
+						}
+					}
+				},
+				states : {
+					hover : {
+						enabled : true,
+						// 鼠标放上去线的状态控制
+						lineWidth : 1.0
+					}
+				},
+				stickyTracking : true,
+				// 跟踪
+				visible : true,
+				lineWidth : 1.6
+			// 线条粗细
+			// pointStart:100
+			}
+		},
+		yAxis : {
+			title : {
+				text : '单位：' + $("#gu").val().split("^")[2],
+				align : 'high',
+				rotation : 0,
+				offset : -30,
+				y : -10
+			},
+			//tickPixelInterval : 15,
+			/*
+			 * plotLines: [{ value: 85, width: 1, color : 'red' }]
+			 */
+			plotLines : plotLines,
+			 labels: {
+                 formatter: function() {
+                     return this.value.toFixed($("#gu").val().split("^")[4]);//这里是两位小数，你要几位小数就改成几
+                 },
+                 style: {
+                     color: 'black'
+                 }
+             }
+
+		},
+		tooltip : {
+			formatter : function() {
+				return '<b>' + this.series.name + '<br/>' + '时间：' + Highcharts.dateFormat('%Y-%m-%d %H', this.x) + '<br/>' + '实时数据：' + Highcharts.numberFormat(this.y,$("#gu").val().split("^")[4]) + ' ' + $("#gu").val().split("^")[2] + '</b>';
+			}
+		},
+		legend : {
+			enabled : false
+		},
+		exporting : {
+			enabled : false
+		},
+		series : [ {
+			color : "green",
+			name : $("#gu").val().split("^")[1],
+			data : pointsizearray
+		} ]
+	});
+
+}
+//打印  实时图 （1） ，时均图（2）
+function dyHighcharts(id){
+	if(id=='1'){
+		chart.print();
+	}else{
+		chartPj.print();
+	}
+}
+//导出  实时图 （1） ，时均图（2）
+function dcHighcharts(id){
+	if(id=='1'){
+		chart.exportChart();
+	}else{
+		chartPj.exportChart();
+	}
+}
+//PUSH推送方法
+function callBack(sensor_id, datav) {
+	if (datav == '') {
+		$("#st" + sensor_id).html('<font style="color: red;">异常</font>');
+	} else if (datav != '') {
+		
+		if($("#guop"+sensor_id).length > 0){
+			$("#st" + sensor_id).html('<font style="color: green;">正常</font>');
+			$("#res" + sensor_id).text(parseFloat(datav).toFixed(($("#guop"+sensor_id).val()).split("^")[4]));
+			$("#ren" + sensor_id).text(parseFloat(datav).toFixed(($("#guop"+sensor_id).val()).split("^")[4]));
+		}
+		
+		var gu = $("#gu").val().split("^");
+		if (sensor_id == gu[0]) {
+			chart.series[0].addPoint([ (new Date()).getTime(), parseFloat(datav) ], true, true);
+		}
+		if (window['charts' + sensor_id]) {
+			window['charts' + sensor_id].series[0].addPoint([ (new Date()).getTime(), parseFloat(datav) ], true, true);
+		}
+	}
+}
