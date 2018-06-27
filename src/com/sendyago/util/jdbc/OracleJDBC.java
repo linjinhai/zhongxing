@@ -13,6 +13,7 @@
 package com.sendyago.util.jdbc;
 
 import com.sendyago.util.common.CharUtil;
+import com.sendyago.util.common.Utils;
 import com.sendyago.util.context.CONFIG;
 import oracle.jdbc.OracleTypes;
 import org.apache.commons.logging.Log;
@@ -86,7 +87,7 @@ public class OracleJDBC {
             switch (flag) {
                 // 返回结果为集合
                 case CONFIG.CURSOR:
-                    ResultSet resultSet = (ResultSet) cs.getObject(count);
+                    ResultSet resultSet = cs.getResultSet();
                     ResultSetMetaData md = resultSet.getMetaData(); //获得结果集结构信息,元数据
                     int columnCount = md.getColumnCount(); //获得列数
                     while (resultSet.next()) {
@@ -153,25 +154,27 @@ public class OracleJDBC {
                 }
                 // 拼接调用参数中的问号
                 String params = setParamNum(count + 1);
-                String sql = "{call " + proceduresName + "(" + params.toString() + ")}";
+                String sql = "{call YUCI." + proceduresName + "(" + params.toString() + ")}";
                 cs = conn.prepareCall(sql);
                 cs = setParam(cs, map);
 
-                log.error("##存储过程调用: " + sql);
-                log.error("##参数: " + JSONArray.fromObject(map));
+                String thisTime = Utils.getSystemDate();
+                System.out.println(thisTime + " ##存储过程调用: " + sql);
+                System.out.println(thisTime + " ##参数: " + JSONArray.fromObject(map));
+                System.out.println(" ");
 
                 switch (flag) {
                     case CONFIG.CURSOR :
-                        cs.registerOutParameter(count+1, OracleTypes.CURSOR);
+                        cs.registerOutParameter(count+1, Types.VARCHAR);
                         break;
                     case CONFIG.NUMBER :
-                        cs.registerOutParameter(count+1, OracleTypes.NUMBER);
+                        cs.registerOutParameter(count+1, Types.NUMERIC);
                         break;
                     case CONFIG.VARCHAR :
-                        cs.registerOutParameter(count+1, OracleTypes.VARCHAR);
+                        cs.registerOutParameter(count+1, Types.VARCHAR);
                         break;
                     default:
-                        cs.registerOutParameter(count+1, OracleTypes.VARCHAR);
+                        cs.registerOutParameter(count+1, Types.VARCHAR);
                         break;
                 }
 
@@ -217,11 +220,13 @@ public class OracleJDBC {
                 }
                 // 拼接调用参数中的问号
                 String params = setParamNum(count);
-                String sql = "{call " + proceduresName + "(" + params.toString() + ")}";
+                String sql = "{call YUCI." + proceduresName + "(" + params.toString() + ")}";
                 cs = conn.prepareCall(sql);
                 cs = setParam(cs, map);
-                log.error("##存储过程调用: " + sql);
-                log.error("##参数: " + JSONArray.fromObject(map));
+                String thisTime = Utils.getSystemDate();
+                System.out.println(thisTime + " ##存储过程调用: " + sql);
+                System.out.println(thisTime + " ##参数: " + JSONArray.fromObject(map));
+                System.out.println(" ");
                 cs.execute(); // 执行存储过程调用
             } // end if
         } catch (SQLException e) {
@@ -255,10 +260,16 @@ public class OracleJDBC {
                 }
                 // 拼接调用参数中的问号
                 String params = setParamNum(count + 1);
-                String sql = "{call " + proceduresName + "(" + params.toString() + ")}";
+                String sql = "{call YUCI." + proceduresName + "(" + params.toString() + ")}";
                 cs = conn.prepareCall(sql);
                 cs = setParam(cs, map);
-                cs.registerOutParameter(count+1, oracle.jdbc.OracleTypes.CURSOR);
+
+                String thisTime = Utils.getSystemDate();
+                System.out.println(thisTime + " ##存储过程调用: " + sql);
+                System.out.println(thisTime + " ##参数: " + JSONArray.fromObject(map));
+                System.out.println(" ");
+
+                cs.registerOutParameter(count+1, Types.VARCHAR);
                 cs.execute(); // 执行存储过程调用
                 rs = (ResultSet)cs.getObject(count+1);
                 closeCS();
