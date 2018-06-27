@@ -37,7 +37,7 @@ import java.util.*;
  * @version $Revision: 1.5.1 $Date: 2016/6/23 10:58:00 修改procedures4Query()方法错误处理 $
  * @version $Revision: 1.6 $Date: 2016/7/11 10:20:00 将数据库连接改为连接池形式 $
  * @version $Revision: 1.6.1 $Date: 2016/7/11 16:35:00 ResultSet使用后关闭 $
- * @version $Revision: 2.0.1 $Date: 2018/6/27 将oracle转换为sql server形式 $
+ * @version $Revision: 2.0.1 $Date: 2018/6/27 HLW 将oracle转换为sql server形式 $
  */
 public class OracleJDBC {
 
