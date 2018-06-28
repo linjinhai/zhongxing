@@ -18,7 +18,8 @@
 		<script src="<%=path %>/js/Vague.js"></script>
 		<script type="text/javascript" src="<%=path %>/pages/login/js/login.js"></script>
 	</head>
-<body onload="checkBrower();">
+<%--<body onload="checkBrower();">--%>
+<body>
 	<input type="hidden" value="<%=path %>" id="path" />
 	<div class="wrapper">
 		<div class="container">
