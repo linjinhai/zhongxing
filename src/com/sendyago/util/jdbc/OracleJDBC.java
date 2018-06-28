@@ -89,6 +89,7 @@ public class OracleJDBC {
                 // 返回结果为集合
                 case CONFIG.CURSOR:
                     ResultSet resultSet = cs.getResultSet();
+                    if (resultSet == null) break;
                     ResultSetMetaData md = resultSet.getMetaData(); //获得结果集结构信息,元数据
                     int columnCount = md.getColumnCount(); //获得列数
                     while (resultSet.next()) {
