@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
 <%
-	String path = request.getContextPath();
+	String path = request.getContextPath(); 
 %>
 <html>
 	<head>
