@@ -130,7 +130,7 @@ public class LoginController {
             }else if(CONFIG.UN_AVAILABLE.equals(_user.get("IS_AVAILABLE").toString())) {
                 params.put(CONFIG.ERRORS, CONFIG.USER_STATUS_ERROR);
                 modelMap.put(CONFIG.UN_LOGINED, params);
-            }else if(null != _user.get("AVAILABLE_DATE")){
+            }else if(null != _user.get("AVAILABLE_DATE") && !"".equals(_user.get("AVAILABLE_DATE"))){
 
             }else{
                 req.getSession().setAttribute(CONFIG.LOGINED,_user);
