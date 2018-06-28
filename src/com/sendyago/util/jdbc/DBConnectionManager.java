@@ -211,7 +211,7 @@ public class DBConnectionManager {
      * Writes a message to the log file.
      */
     private void log(String msg) {
-        log.error(new Date() + ": " + msg);
+        log.info(new Date() + ": " + msg);
     }
 
     /**
