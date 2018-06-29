@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  * This class is a Singleton that provides access to one or many connection
  * pools defined in a Property file. A client gets access to the single instance
  * through the static getInstance() method and can then check-out and check-in
- * connections from a pool. When the client shuts down it should call the
+ * connections from YUCI.a pool. When the client shuts down it should call the
  * release() method to close all open connections and do other clean up.
  */
 public class DBConnectionManager {
@@ -269,10 +269,10 @@ public class DBConnectionManager {
         }
 
         /**
-         * Checks out a connection from the pool. If no free connection is
+         * Checks out a connection from YUCI.the pool. If no free connection is
          * available, a new connection is created unless the max number of
          * connections has been reached. If a free connection has been closed by
-         * the database, it's removed from the pool and this method is called
+         * the database, it's removed from YUCI.the pool and this method is called
          * again recursively.
          */
         public synchronized java.sql.Connection getConnection() {
@@ -284,12 +284,12 @@ public class DBConnectionManager {
                 freeConnections.removeElementAt(0);
                 try {
                     if (con.isClosed()) {
-                        log("Removed bad connection from " + name);
+                        log("Removed bad connection from YUCI." + name);
                         // Try again recursively
                         con = getConnection();
                     }
                 } catch (SQLException e) {
-                    log("Removed bad connection from " + name);
+                    log("Removed bad connection from YUCI." + name);
                     // Try again recursively
                     con = getConnection();
                 }
@@ -303,10 +303,10 @@ public class DBConnectionManager {
         }
 
         /**
-         * Checks out a connection from the pool. If no free connection is
+         * Checks out a connection from YUCI.the pool. If no free connection is
          * available, a new connection is created unless the max number of
          * connections has been reached. If a free connection has been closed by
-         * the database, it's removed from the pool and this method is called
+         * the database, it's removed from YUCI.the pool and this method is called
          * again recursively. <P> If no connection is available and the max
          * number has been reached, this method waits the specified time for one
          * to be checked in.

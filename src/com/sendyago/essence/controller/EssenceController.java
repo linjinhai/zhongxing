@@ -148,7 +148,7 @@ public class EssenceController extends BaseController {
 	 */
 	@RequestMapping("/getTop2")
 	public void getTop2(HttpServletRequest req, HttpServletResponse rep, @RequestParam(value = "id", defaultValue = "") String id) throws Exception {
-		List list = es.docaplist("select * from BRIDGE_PARAM_DATA where data_pid=" + id + " and data_flag=0 order by data_id");
+		List list = es.docaplist("select * from YUCI.BRIDGE_PARAM_DATA where data_pid=" + id + " and data_flag=0 order by data_id");
 		JSONArray js = JSONArray.fromObject(list);
 		rep.getWriter().print(js.toString());
 
@@ -161,7 +161,7 @@ public class EssenceController extends BaseController {
 	 */
 	@RequestMapping("/getTop3")
 	public void getTop3(HttpServletRequest req, HttpServletResponse rep, @RequestParam(value = "id", defaultValue = "") String id) throws Exception {
-		List list = es.docaplist("select * from BRIDGE_ASSESS where assess_id=" + id + " ");
+		List list = es.docaplist("select * from YUCI.BRIDGE_ASSESS where assess_id=" + id + " ");
 		JSONArray js = JSONArray.fromObject(list);
 		rep.getWriter().print(js.toString());
 
@@ -174,7 +174,7 @@ public class EssenceController extends BaseController {
 	 */
 	@RequestMapping("/getTop4")
 	public void getTop4(HttpServletRequest req, HttpServletResponse rep, @RequestParam(value = "id", defaultValue = "") String id) throws Exception {
-		List list = es.docaplist("select * from BRIDGE_ASSESS_DATA where assess_id=" + id + " ");
+		List list = es.docaplist("select * from YUCI.BRIDGE_ASSESS_DATA where assess_id=" + id + " ");
 		JSONArray js = JSONArray.fromObject(list);
 		rep.getWriter().print(js.toString());
 
@@ -203,7 +203,7 @@ public class EssenceController extends BaseController {
 	 */
 	@RequestMapping("/addEssenceDetail")
 	public void addEssenceDetail(ModelMap modelMap, HttpServletResponse rep, HttpServletRequest req, @RequestParam LinkedHashMap<String, Object> params, String in_id, String[] xzsl, String gj_id) throws Exception {
-		es.docap("delete from BRIDGE_INSPECTION_DATA where struct_id=" + gj_id + " and inspect_id=" + in_id);
+		es.docap("delete from YUCI.BRIDGE_INSPECTION_DATA where struct_id=" + gj_id + " and inspect_id=" + in_id);
 		es.docap("update BRIDGE_INPSECTION set INSPECT_FLAG='1' where  inspect_id=" + in_id);
 		for (String a : xzsl) {
 			es.docap("insert into BRIDGE_INSPECTION_DATA values (" + in_id + "," + gj_id + "," + a.split("_")[0] + "," + getScore(a) + "," + a.split("_")[1] + ") ");
@@ -219,9 +219,9 @@ public class EssenceController extends BaseController {
 	@RequestMapping("/addAqpgDetail")
 	public void addAqpgDetail(ModelMap modelMap, HttpServletResponse rep, HttpServletRequest req, @RequestParam LinkedHashMap<String, Object> params, String[] RT) throws Exception {
 		//删除主表
-		es.docap("delete from BRIDGE_ASSESS where assess_id=" + params.get("assess_id"));
+		es.docap("delete from YUCI.BRIDGE_ASSESS where assess_id=" + params.get("assess_id"));
 		//删除附表
-		es.docap("delete from BRIDGE_ASSESS_DATA where assess_id=" + params.get("assess_id"));
+		es.docap("delete from YUCI.BRIDGE_ASSESS_DATA where assess_id=" + params.get("assess_id"));
 		//增加主表
 		es.docap("insert into BRIDGE_ASSESS (ASSESS_ID,MP_1,MP_2,MP_3,MP_4,MP_5,MP_6,MP_7,MP_8,MP_9,MP_10,MP_11,MP_12,TY_1,TY_2,TY_3,TY_4,TY_5,TY_6,YU_1,YU_2,YU_3,YU_4,YU_5,YU_6,YU_7,YU_8) values ( '" + params.get("assess_id") + "' , '" + params.get("MP_1") + "' , '" + params.get("MP_2") + "' , '" + params.get("MP_3") + "' , '" + params.get("MP_4") + "' , '" + params.get("MP_5") + "' , '" + params.get("MP_6") + "' , '" + params.get("MP_7") + "' , '" + params.get("MP_8") + "' , '" + params.get("MP_9") + "' , '" + params.get("MP_10") + "' , '" + params.get("MP_11") + "' , '" + params.get("MP_12") + "' , '" + params.get("TY_1") + "' , '" + params.get("TY_2") + "' , '" + params.get("TY_3") + "' , '" + params.get("TY_4") + "' , '" + params.get("TY_5") + "' , '" + params.get("TY_6") + "' , '" + params.get("YU_1")
 				+ "' , '" + params.get("YU_2") + "' , '" + params.get("YU_3") + "' , '" + params.get("YU_4") + "' , '" + params.get("YU_5") + "' , '" + params.get("YU_6") + "' , '" + params.get("YU_7") + "' , '" + params.get("YU_8") + "' )  ");
@@ -244,8 +244,8 @@ public class EssenceController extends BaseController {
 		/**
 		 * 1）针对未评估部分，可按无病害处理，否则出现大量未评估的项目。
 		 */
-		List bp = es.docaplist("select * from BRIDGE_STRUCT t left join BRIDGE_PARAM_ASSESS q on t.struct_id=q.struct_id where t.is_child=1 and q.desc_index=1");
-		List t1 = es.docaplist("select q.* from BRIDGE_STRUCT q where q.is_child=2 and q.struct_id not in (select w.struct_id from BRIDGE_INSPECTION_DATA w where w.inspect_id=" + params.get("assess_id") + " ) ");
+		List bp = es.docaplist("select * from YUCI.BRIDGE_STRUCT t left join BRIDGE_PARAM_ASSESS q on t.struct_id=q.struct_id where t.is_child=1 and q.desc_index=1");
+		List t1 = es.docaplist("select q.* from YUCI.BRIDGE_STRUCT q where q.is_child=2 and q.struct_id not in (select w.struct_id from YUCI.BRIDGE_INSPECTION_DATA w where w.inspect_id=" + params.get("assess_id") + " ) ");
 		for (int i = 0; i < t1.size(); i++) {
 			Map mi1 = (Map) t1.get(i);
 			for (int j = 0; j < bp.size(); j++) {
@@ -259,7 +259,7 @@ public class EssenceController extends BaseController {
 		 * 2）开始计算
 		 */
 		Map m2 = new HashMap();
-		List<Map> list_qq = es.docaplist("select * from BRIDGE_PARAM_DATA t where data_flag=0 order by DATA_ID");
+		List<Map> list_qq = es.docaplist("select * from YUCI.BRIDGE_PARAM_DATA t where data_flag=0 order by DATA_ID");
 		String[] allChile = new String[list_qq.size()];
 		for (int i = 0; i < list_qq.size(); i++) {
 			Map mapui = list_qq.get(i);
@@ -267,9 +267,9 @@ public class EssenceController extends BaseController {
 		}
 		for (String a : allChile) {
 			List l3 = new java.util.ArrayList();
-			List<Map> l1 = es.docaplist("select * from BRIDGE_STRUCT t where t.is_child=2 and t.struct_pid=" + a);
+			List<Map> l1 = es.docaplist("select * from YUCI.BRIDGE_STRUCT t where t.is_child=2 and t.struct_pid=" + a);
 			for (Map m : l1) {
-				List l2 = es.docaplist("select * from BRIDGE_INSPECTION_DATA t  where t.inspect_id=" + params.get("assess_id") + " and t.struct_id=" + m.get("STRUCT_ID") + " order by score desc");
+				List l2 = es.docaplist("select * from YUCI.BRIDGE_INSPECTION_DATA t  where t.inspect_id=" + params.get("assess_id") + " and t.struct_id=" + m.get("STRUCT_ID") + " order by score desc");
 				Map map0 = (Map) l2.get(0);
 				float u0 = Float.parseFloat(map0.get("SCORE") + "");
 				float zf = 100 - u0;
@@ -291,7 +291,7 @@ public class EssenceController extends BaseController {
 				}
 				Arrays.sort(arr);
 
-				List l4 = es.docaplist("select * from BRIDGE_PARAM_T where n=" + l3.size());
+				List l4 = es.docaplist("select * from YUCI.BRIDGE_PARAM_T where n=" + l3.size());
 				if (l4.size() == 0) {
 					t = (float) 2.30;
 				} else {
@@ -379,10 +379,10 @@ public class EssenceController extends BaseController {
 	@RequestMapping(value = "dcAqpgExcel", method = { RequestMethod.GET, RequestMethod.POST })
 	public void dcAqpgExcel(ModelMap modelMap, HttpServletRequest request, HttpServletResponse response, String id) throws Exception {
 		try {
-			Map map = (Map) es.docaplist("select * from BRIDGE_ASSESS where assess_ID='" + id + "'").get(0);
-			List list1 = es.docaplist("select * from BRIDGE_ASSESS_DATA t left join bridge_param_data q on t.data_id=q.data_id where t.assess_id= " + id + " and q.data_pid=1 order by q.data_id");
-			List list2 = es.docaplist("select * from BRIDGE_ASSESS_DATA t left join bridge_param_data q on t.data_id=q.data_id where t.assess_id= " + id + " and q.data_pid=2 order by q.data_id");
-			List list3 = es.docaplist("select * from BRIDGE_ASSESS_DATA t left join bridge_param_data q on t.data_id=q.data_id where t.assess_id= " + id + " and q.data_pid=3 order by q.data_id");
+			Map map = (Map) es.docaplist("select * from YUCI.BRIDGE_ASSESS where assess_ID='" + id + "'").get(0);
+			List list1 = es.docaplist("select * from YUCI.BRIDGE_ASSESS_DATA t left join bridge_param_data q on t.data_id=q.data_id where t.assess_id= " + id + " and q.data_pid=1 order by q.data_id");
+			List list2 = es.docaplist("select * from YUCI.BRIDGE_ASSESS_DATA t left join bridge_param_data q on t.data_id=q.data_id where t.assess_id= " + id + " and q.data_pid=2 order by q.data_id");
+			List list3 = es.docaplist("select * from YUCI.BRIDGE_ASSESS_DATA t left join bridge_param_data q on t.data_id=q.data_id where t.assess_id= " + id + " and q.data_pid=3 order by q.data_id");
 			File templateFile = null;
 			File templateFile2 = null;
 

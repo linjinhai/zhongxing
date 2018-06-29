@@ -62,7 +62,7 @@ public class MinoController {
 	@RequestMapping(value = "getPartByTypeid")
 	public void getPartByTypeid(HttpServletRequest req, HttpServletResponse rep, @RequestParam LinkedHashMap<String, Object> params) {
 		try {
-			rep.getWriter().println(JSONArray.fromObject(   es.docaplist("select * from MONITOR_SENSOR_PART t where type_id = (select type_id from monitor_sensor_section where section_id="+req.getParameter("sid")+")")).toString());
+			rep.getWriter().println(JSONArray.fromObject(   es.docaplist("select * from YUCI.MONITOR_SENSOR_PART t where type_id = (select type_id from YUCI.monitor_sensor_section where section_id="+req.getParameter("sid")+")")).toString());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -98,7 +98,7 @@ public class MinoController {
 		try {
 			String sql = "";
 			String sid = req.getParameter("sid");
-			sql = sid.equals("-1") ? "select * from monitor_sensor_section where type_id=-1" : "select * from monitor_sensor_section where section_id=" + req.getParameter("sid");
+			sql = sid.equals("-1") ? "select * from YUCI.monitor_sensor_section where type_id=-1" : "select * from YUCI.monitor_sensor_section where section_id=" + req.getParameter("sid");
 			List list = es.docaplist(sql);
 			JSONArray js = JSONArray.fromObject(list);
 			rep.getWriter().print(js.toString());
@@ -124,9 +124,9 @@ public class MinoController {
 			String sql = "";
 			String sid = req.getParameter("sid");
 			if (sid.equals("-1")) {
-				sql = "select q.*,w.part_img,e.mon_p_top,e.mon_p_left,e.mon_v_top,e.mon_v_left,    e.main_p_top,e.main_p_left,e.main_v_top,e.main_v_left from monitor_sensor q left join monitor_sensor_part w on q.part_id=w.part_id left join monitor_sensor_postion e on e.sensor_id=q.sensor_id  order by q.part_id";
+				sql = "select q.*,w.part_img,e.mon_p_top,e.mon_p_left,e.mon_v_top,e.mon_v_left,    e.main_p_top,e.main_p_left,e.main_v_top,e.main_v_left from YUCI.monitor_sensor q left join monitor_sensor_part w on q.part_id=w.part_id left join monitor_sensor_postion e on e.sensor_id=q.sensor_id  order by q.part_id";
 			} else {
-				sql = "select q.*,w.part_img,e.mon_p_top,e.mon_p_left,e.mon_v_top,e.mon_v_left,    e.main_p_top,e.main_p_left,e.main_v_top,e.main_v_left from monitor_sensor q left join monitor_sensor_part w on q.part_id=w.part_id left join monitor_sensor_postion e on e.sensor_id=q.sensor_id where q.section_id=" + req.getParameter("sid") + " order by q.part_id";
+				sql = "select q.*,w.part_img,e.mon_p_top,e.mon_p_left,e.mon_v_top,e.mon_v_left,    e.main_p_top,e.main_p_left,e.main_v_top,e.main_v_left from YUCI.monitor_sensor q left join monitor_sensor_part w on q.part_id=w.part_id left join monitor_sensor_postion e on e.sensor_id=q.sensor_id where q.section_id=" + req.getParameter("sid") + " order by q.part_id";
 			}
 			List list = es.docaplist(sql);
 			JSONArray js = JSONArray.fromObject(list);
@@ -162,7 +162,7 @@ public class MinoController {
 		String sql = "";
 		String gh = hidf.equals("-1") ? "main" : "mon";
 		try {
-			List list = es.docaplist("select * from MONITOR_SENSOR_POSTION where sensor_id=" + sid);
+			List list = es.docaplist("select * from YUCI.MONITOR_SENSOR_POSTION where sensor_id=" + sid);
 			if (list.size() == 0) {
 				es.docap("insert into MONITOR_SENSOR_POSTION (sensor_id) values(" + sid + ")");
 			}
