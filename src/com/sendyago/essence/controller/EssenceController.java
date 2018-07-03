@@ -244,7 +244,7 @@ public class EssenceController extends BaseController {
 		/**
 		 * 1）针对未评估部分，可按无病害处理，否则出现大量未评估的项目。
 		 */
-		List bp = es.docaplist("select * from YUCI.BRIDGE_STRUCT t left join BRIDGE_PARAM_ASSESS q on t.struct_id=q.struct_id where t.is_child=1 and q.desc_index=1");
+		List bp = es.docaplist("select * from YUCI.BRIDGE_STRUCT t left join YUCI. BRIDGE_PARAM_ASSESS q on t.struct_id=q.struct_id where t.is_child=1 and q.desc_index=1");
 		List t1 = es.docaplist("select q.* from YUCI.BRIDGE_STRUCT q where q.is_child=2 and q.struct_id not in (select w.struct_id from YUCI.BRIDGE_INSPECTION_DATA w where w.inspect_id=" + params.get("assess_id") + " ) ");
 		for (int i = 0; i < t1.size(); i++) {
 			Map mi1 = (Map) t1.get(i);
@@ -380,9 +380,9 @@ public class EssenceController extends BaseController {
 	public void dcAqpgExcel(ModelMap modelMap, HttpServletRequest request, HttpServletResponse response, String id) throws Exception {
 		try {
 			Map map = (Map) es.docaplist("select * from YUCI.BRIDGE_ASSESS where assess_ID='" + id + "'").get(0);
-			List list1 = es.docaplist("select * from YUCI.BRIDGE_ASSESS_DATA t left join bridge_param_data q on t.data_id=q.data_id where t.assess_id= " + id + " and q.data_pid=1 order by q.data_id");
-			List list2 = es.docaplist("select * from YUCI.BRIDGE_ASSESS_DATA t left join bridge_param_data q on t.data_id=q.data_id where t.assess_id= " + id + " and q.data_pid=2 order by q.data_id");
-			List list3 = es.docaplist("select * from YUCI.BRIDGE_ASSESS_DATA t left join bridge_param_data q on t.data_id=q.data_id where t.assess_id= " + id + " and q.data_pid=3 order by q.data_id");
+			List list1 = es.docaplist("select * from YUCI.BRIDGE_ASSESS_DATA t left join YUCI. bridge_param_data q on t.data_id=q.data_id where t.assess_id= " + id + " and q.data_pid=1 order by q.data_id");
+			List list2 = es.docaplist("select * from YUCI.BRIDGE_ASSESS_DATA t left join YUCI. bridge_param_data q on t.data_id=q.data_id where t.assess_id= " + id + " and q.data_pid=2 order by q.data_id");
+			List list3 = es.docaplist("select * from YUCI.BRIDGE_ASSESS_DATA t left join YUCI. bridge_param_data q on t.data_id=q.data_id where t.assess_id= " + id + " and q.data_pid=3 order by q.data_id");
 			File templateFile = null;
 			File templateFile2 = null;
 

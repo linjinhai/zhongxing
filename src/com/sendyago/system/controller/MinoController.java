@@ -124,9 +124,9 @@ public class MinoController {
 			String sql = "";
 			String sid = req.getParameter("sid");
 			if (sid.equals("-1")) {
-				sql = "select q.*,w.part_img,e.mon_p_top,e.mon_p_left,e.mon_v_top,e.mon_v_left,    e.main_p_top,e.main_p_left,e.main_v_top,e.main_v_left from YUCI.monitor_sensor q left join monitor_sensor_part w on q.part_id=w.part_id left join monitor_sensor_postion e on e.sensor_id=q.sensor_id  order by q.part_id";
+				sql = "select q.*,w.part_img,e.mon_p_top,e.mon_p_left,e.mon_v_top,e.mon_v_left,    e.main_p_top,e.main_p_left,e.main_v_top,e.main_v_left from YUCI.monitor_sensor q left join YUCI. monitor_sensor_part w on q.part_id=w.part_id left join YUCI. monitor_sensor_postion e on e.sensor_id=q.sensor_id  order by q.part_id";
 			} else {
-				sql = "select q.*,w.part_img,e.mon_p_top,e.mon_p_left,e.mon_v_top,e.mon_v_left,    e.main_p_top,e.main_p_left,e.main_v_top,e.main_v_left from YUCI.monitor_sensor q left join monitor_sensor_part w on q.part_id=w.part_id left join monitor_sensor_postion e on e.sensor_id=q.sensor_id where q.section_id=" + req.getParameter("sid") + " order by q.part_id";
+				sql = "select q.*,w.part_img,e.mon_p_top,e.mon_p_left,e.mon_v_top,e.mon_v_left,    e.main_p_top,e.main_p_left,e.main_v_top,e.main_v_left from YUCI.monitor_sensor q left join YUCI. monitor_sensor_part w on q.part_id=w.part_id left join YUCI. monitor_sensor_postion e on e.sensor_id=q.sensor_id where q.section_id=" + req.getParameter("sid") + " order by q.part_id";
 			}
 			List list = es.docaplist(sql);
 			JSONArray js = JSONArray.fromObject(list);
