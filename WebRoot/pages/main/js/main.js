@@ -226,8 +226,6 @@ function monitorLine(sensor_code) {
                                             cache: false,
                                             dataType: 'json',
                                             success: function (data) {
-                                                // var x = (new Date()).getTime(), // current time
-                                                //     y = Math.random();
                                                 if(data.length > 0) {
                                                     var y = parseFloat(data[0].UPDATE_VALUE),
                                                         x = data[0].UPDATE_TIME;
