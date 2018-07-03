@@ -112,8 +112,12 @@ public class MainController {
             Map map = service.queryMonitorPoint(params);
             // 将日期转为毫秒
             String date = (String) map.get("UPDATE_TIME");
-            long millis = Utils.getMillis2(date);
-            map.put("UPDATE_TIME", millis);
+            if (date != null) {
+                long millis = Utils.getMillis2(date);
+                map.put("UPDATE_TIME", millis);
+            } else {
+                map = null;
+            }
             // 将结果发送到前台
             JSONArray jsonArray = JSONArray.fromObject(map);
             rep.getWriter().print(jsonArray.toString());
