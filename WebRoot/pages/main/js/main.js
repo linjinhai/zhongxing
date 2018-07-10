@@ -227,12 +227,14 @@ function monitorLine(sensor_code) {
                                             dataType: 'json',
                                             success: function (data) {
                                                 if(data.length > 0) {
-                                                    var y = parseFloat(data[0].UPDATE_VALUE),
-                                                        x = data[0].UPDATE_TIME;
-                                                    if(lastmillis != x){
-                                                        series.addPoint([x, y], true, true);
+                                                    if (data[0] != null) {
+                                                        var y = parseFloat(data[0].UPDATE_VALUE),
+                                                            x = data[0].UPDATE_TIME;
+                                                        if(lastmillis != x){
+                                                            series.addPoint([x, y], true, true);
+                                                        }
+                                                        lastmillis = x;
                                                     }
-                                                    lastmillis = x;
                                                 }
                                             }
                                         });
