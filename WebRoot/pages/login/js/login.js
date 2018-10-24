@@ -54,7 +54,7 @@ function login(){
     提交用户登录信息至后台标校验
  */
 function loginToMain() {
-    var path = document.getElementById("path").value;
+    var path = $('#path').val();
     var loginFrom = document.getElementById("loginForm");
     loginFrom.action = path+"/controller/main";
     loginFrom.submit();

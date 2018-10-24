@@ -79,6 +79,11 @@
     <div class="js-sidebar-content">
         <!-- 系统菜单 START -->
         <!-- 系统菜单信息,该菜单信息是根据登录用户的角色进行查询 -->
+        <div>
+            <div style="text-align: center;padding: 20px 0 0;">
+                <img src="<%=path%>/img/USA.png" class="img-resposive" alt=""/>
+            </div>
+        </div>
         <c:forEach items="${menus }" var="MENU" varStatus="status">
             <c:if test="${MENU.IS_CHILD == 0}">
                 <c:if test="${status.count > 1}">
@@ -127,57 +132,6 @@
             </c:if>
         </c:forEach>
         </ul>
-        <!-- 系统菜单 END -->
-
-        <%--<h5 class="sidebar-nav-title">其他信息 <a class="action-link" href="#"><span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span></a></h5>--%>
-        <%--<ul class="sidebar-labels">--%>
-            <%--<li>--%>
-                <%--<a href="#">--%>
-                    <%--<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>--%>
-                    <%--<span class="label-name">系统信息</span>--%>
-                <%--</a>--%>
-            <%--</li>--%>
-            <%--<li>--%>
-                <%--<a href="#">--%>
-                    <%--<span class="glyphicon glyphicon-book" aria-hidden="true"></span>--%>
-                    <%--<span class="label-name">系统说明</span>--%>
-                <%--</a>--%>
-            <%--</li>--%>
-        <%--</ul>--%>
-        <%--<h5 class="sidebar-nav-title">系统开发进度进度</h5>--%>
-        <%--<div class="sidebar-alerts">--%>
-            <%--<div class="alert fade in">--%>
-                <%--<a href="#" class="close" data-dismiss="alert" aria-hidden="true">&times;</a>--%>
-                <%--<span class="text-white fw-semi-bold">整体开发进度</span>--%>
-                <%--<div class="progress progress-xs mt-xs mb-0"><div class="progress-bar progress-bar-warning" style="width: 85%" title="85%"></div></div>--%>
-            <%--</div>--%>
-            <%--<div class="alert fade in">--%>
-                <%--<a href="#" class="close" data-dismiss="alert" aria-hidden="true">&times;</a>--%>
-                <%--<span class="text-white fw-semi-bold">系统管理模块</span>--%>
-                <%--<div class="progress progress-xs mt-xs mb-0"><div class="progress-bar progress-bar-success" style="width: 99%" title="99%"></div></div>--%>
-            <%--</div>--%>
-            <%--<div class="alert fade in">--%>
-                <%--<a href="#" class="close" data-dismiss="alert" aria-hidden="true">&times;</a>--%>
-                <%--<span class="text-white fw-semi-bold">实时监测与预警模块</span>--%>
-                <%--<div class="progress progress-xs mt-xs mb-0"><div class="progress-bar progress-bar-success" style="width: 92%" title="92%"></div></div>--%>
-            <%--</div>--%>
-            <%--<div class="alert fade in">--%>
-                <%--<a href="#" class="close" data-dismiss="alert" aria-hidden="true">&times;</a>--%>
-                <%--<span class="text-white fw-semi-bold">数据查询模块</span>--%>
-                <%--<div class="progress progress-xs mt-xs mb-0"><div class="progress-bar progress-bar-success" style="width: 90%" title="90%"></div></div>--%>
-            <%--</div>--%>
-            <%--<div class="alert fade in">--%>
-                <%--<a href="#" class="close" data-dismiss="alert" aria-hidden="true">&times;</a>--%>
-                <%--<span class="text-white fw-semi-bold">系统工作状态模块</span>--%>
-                <%--<div class="progress progress-xs mt-xs mb-0"><div class="progress-bar progress-bar-danger" style="width: 10%" title="10%"></div></div>--%>
-            <%--</div>--%>
-            <%--<div class="alert fade in">--%>
-                <%--<a href="#" class="close" data-dismiss="alert" aria-hidden="true">&times;</a>--%>
-                <%--<span class="text-white fw-semi-bold">其他</span>--%>
-                <%--<div class="progress progress-xs mt-xs mb-0"><div class="progress-bar progress-bar-success" style="width: 98%" title="98%"></div></div>--%>
-                <%--<br /><br /><br />--%>
-            <%--</div>--%>
-        <%--</div>--%>
         <br /><br /><br /><br />
     </div>
 </div>
@@ -189,11 +143,11 @@
         <div class="ifr_div">
             <div class="proccess" id="loading" style="display: none;"><b>正在加载中...请稍候</b></div>
             <iframe name="main" id="main" src="" marginwidth="0"
-                marginheight="0" width="100%" height="100%" scrolling="yes" border="0" frameborder="0"
+                marginheight="0" width="100%" height="100%" scrolling="no" border="0" frameborder="0"
                     allowtransparency="true"></iframe>
         </div>
         <%--<div class="footer">宁波杉工结构监测与控制工程中心有限公司</div>--%>
-        <div class="footer">&nbsp;</div>
+        <%--<div class="footer">&nbsp;</div>--%>
     </div>
 </div>
 

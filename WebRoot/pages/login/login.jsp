@@ -23,7 +23,8 @@
 	<input type="hidden" value="<%=path %>" id="path" />
 	<div class="wrapper">
 		<div class="container">
-			<h1><img src="<%=path %>/img/logo.png"></h1>
+			<%--<h1><img src="<%=path %>/img/logo.png"></h1>--%>
+			<h1>中兴大桥健康监测系统</h1>
 			<form action="" method="post" id="loginForm" name="loginForm" class="form-horizontal">
 				<input type="text" id="USER_ID" name="USER_ID" placeholder="账号" class="form-control" value="${un_info.USER_ID}">
 				<input type="password" id="USER_PASS" name="USER_PASS" placeholder="密码" required="" value="${un_info.USER_PASS}" class="form-control">

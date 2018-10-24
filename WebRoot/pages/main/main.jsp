@@ -1,202 +1,267 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<%@ page language="java" import="java.util.*" pageEncoding="utf-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    String path = request.getContextPath();
+%>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta name=”renderer” content=”webkit”>
     <title><%@ include file="/pages/main/title.jsp"%></title>
-    <%@ include file="/pages/common/common.jsp" %>
+    <%--<%@ include file="/pages/common/common.jsp" %>--%>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 
+    <link href="<%=path %>/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<%=path%>/css/style2.css" rel="stylesheet"/>
+    <link href="<%=path%>/viwer3d/style.css" rel="stylesheet" />
+    <script src="<%=path %>/js/jquery.min.js"></script>
+    <script src="<%=path%>/viwer3d/three.min.js"></script>
+    <script src="<%=path%>/viwer3d/viewer3D.min.js"></script>
+    <script src="<%=path%>/viwer3d/ScreenShotManager.js"></script>
     <script type="text/javascript" src="<%=path %>/highcharts/highcharts.js"></script>
     <script type="text/javascript" src="<%=path %>/highcharts/exporting.js"></script>
     <script type="text/javascript" src="<%=path %>/highcharts/style-grid-light.js"></script>
-    <script type="text/javascript" src="<%=path %>/js/UnityObject2.js"></script>
-    <%--<script type="text/javascript" src="<%=path %>/highcharts/style-sand-signka.js"></script>--%>
-<script type="text/javascript">
-$(function(){
-	$.ajax({
-		type : "POST",
-		async : false,
-		url :  "<%=path%>/mioncontroller/getSectionPath?sid=-1",
-		dataType : "json",
-		success : function(data) {
-			if(data.length>0){
-				$("#dt").attr('src','<%=path%>' + data[0].SECTION_PATH);
-			}
-			
-			
-		}
-
-	});
-	
-	//根据截面id 获取该截面下所有传感器
-	$.ajax({
-		type : "POST",
-		async : false,
-		url :  "<%=path%>/mioncontroller/getSectionAllSensor?sid=-1",
-		dataType : "json",
-		success : function(data) {
-			for(var i=0;i<data.length;i++){
-				if(data[i].MAIN_P_LEFT!=null){
-					var cv='';
-					cv+='<div style="position: absolute; top: '+data[i].MAIN_P_TOP+'%; left: '+data[i].MAIN_P_LEFT+'%;" class="dragMe" id="tp'+data[i].SENSOR_ID+'" title="'+data[i].SENSOR_CODE+'" >';
-					cv+='<img src="<%=path%>/' + data[i].PART_IMG + '" style="width: 15px; height: 15px;" />';
-					cv += '</div>';
-					$("#unityPlayer1").append(cv);
-				}
-				if(data[i].MAIN_V_LEFT!=null){
-					var cv='';
-					cv += '<div  style="background-color:white;position:absolute;width:;height:18px;z-index:1;left: '+data[i].MAIN_V_LEFT+'%;top: '+data[i].MAIN_V_TOP+'%;" class="dragMe" id="va' + data[i].SENSOR_ID + '" >';
-					cv += '<span ><a href="javascript:sensor_id(&quot;'+data[i].SENSOR_CODE+'&quot;);" >' + data[i].SENSOR_CODE + '</a></span>';
-					cv += '</div>';
-					$("#unityPlayer1").append(cv);
-				}
-			}
-			
-			
-			}
-		});
-});
-</script>
-
-    <link href="<%=request.getContextPath() %>/viwer3d/style.css" rel="stylesheet" />
-	<script src="<%=request.getContextPath() %>/viwer3d/three.min.js"></script>
-    <script src="<%=request.getContextPath() %>/viwer3d/viewer3D.min.js"></script>
-    <script>
-        var docs =
-            [{"path":"../../viwer3d/0/0.svf","name":"提篮拱桥1.3DS"}]
-        ;
-
-        var oViewer =null ;
-        $(document).ready (function () {
-            //var options ={ 'document': '', 'env': 'AutodeskProduction' } ;
-            var options ={ 'docid': docs [0].path, env: 'Local' } ;
-
-            //oViewer =new Autodesk.Viewing.Viewer3D ($("#viewer") [0], {}) ; // No toolbar
-            oViewer =new Autodesk.Viewing.Private.GuiViewer3D ($("#viewer") [0], {}) ; // With toolbar
-            Autodesk.Viewing.Initializer (options, function () {
-				oViewer.initialize () ;
-                oViewer.addEventListener (Autodesk.Viewing.GEOMETRY_LOADED_EVENT, function (event) {
-                    //oViewer.removeEventListener (Autodesk.Viewing.GEOMETRY_LOADED_EVENT, arguments.callee) ;
-                    oViewer.fitToView (true) ;
-                    setTimeout (function () { oViewer.autocam.setHomeViewFrom (oViewer.navigation.getCamera ()) ; }, 1000) ;
-                }) ;
-				oViewer.loadModel (options.docid) ;
-
-				for ( var i =0 ; i < docs.length ; i++ ) {
-					var r =$('<div><button id="view_' + i + '">'
-						+ docs [i].name
-						+ '<div><img id="img__' + i + '" src="' + docs [i].path + '.png"></div></button></div>') ;
-					$('#list').append (r) ;
-					$('#view_' + i).click (function (e) {
-						e.stopPropagation () ;
-                        //oViewer.impl.unloadCurrentModel () ;
-                        // API would be tearDown()/setUp()
-                        // tearDown() unloads extensions too, so you need setUp() after that to load again
-                        // setUp() requires the viewer configuration again, the one you use to start the viewer.
-                        oViewer.tearDown () ;
-                        oViewer.setUp ({ env: 'Local' }) ;
-						var i =parseInt (e.target.id.substring (5)) ;
-						oViewer.loadModel (docs [i].path) ;
-					}) ;
-				}
-			}) ;
-        }) ;
-    </script>
 </head>
-<body onload="initLines();">
-<input type="hidden" id="path" value="<%=path %>" />
-<div class="page-header">
-    <ol class="breadcrumb">
-        <li><span class="glyphicon glyphicon-home" aria-hidden="true"></span> 系统首页</li>
+<body>
+<!-- Start: Content -->
+<div class="container-fluid content">
+    <div class="row">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="pull-left">
+                <ol class="breadcrumb visible-sm visible-md visible-lg">
+                    <li><a href="index.html"><i class="icon fa fa-home"></i>首页</a></li>
+                    <li class="active"><i class="fa fa-laptop"></i>整体监测与预警</li>
+                </ol>
+            </div>
+            <div class="pull-right">
+                <%--<h2>运维展示系统</h2>--%>
+            </div>
+        </div>
+        <!-- End Page Header -->
+        <!-- Main Page -->
+        <div class="main" id="viewer">
+            <%--<div class="m-f-block">--%>
+            <div class="l-block" style="left:10px;display:none;">
+                <div class="m-block">
+                    <div class="m-block-title">机房功能</div>
+                    <div class="m-block-cont" id="chart1"></div>
+                </div>
+                <div class="m-block">
+                    <div class="m-block-title">机房功能</div>
+                    <div class="m-block-cont" id="chart2"></div>
+                </div>
+                <div class="m-block">
+                    <div class="m-block-title">机房功能</div>
+                    <div class="m-block-cont"></div>
+                </div>
+            </div>
 
-    </ol>
-</div>
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span>整体BIM图形预览</span>
-                    <a href="#" class="dropdown-toggle pull-right" data-toggle="dropdown">
-                        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>
-                    </a>
-                    <ul class="dropdown-menu pull-right">
-                        <li><a href="#" onclick="hideUnity();">显示/隐藏</a></li>
-                    </ul>
+            <div class="l-block" style="left:315px;display:none;">
+                <div class="m-block">
+                    <div class="m-block-title">机房功能</div>
+                    <div class="m-block-cont"></div>
                 </div>
-                <div class="panel-body">
-                    <div style="height:400px;">
-                        <div id="viewer" style="display: ;position: relative;height: 100%">
-                        <!-- 
-                            <div class="missing"></div>
-                            <div class="broken"></div>
-                            -->
-                           
-                        </div>
-                    </div>
+                <div class="m-block">
+                    <div class="m-block-title">机房功能</div>
+                    <div class="m-block-cont"></div>
+                </div>
+                <div class="m-block">
+                    <div class="m-block-title">机房功能</div>
+                    <div class="m-block-cont"></div>
                 </div>
             </div>
+
+            <div class="r-block" style="display:none;">
+                <div class="m-block">
+                    <div class="m-block-title">机房功能</div>
+                    <div class="m-block-cont" style="height: 93%;overflow: hidden;overflow-y: scroll;"></div>
+                </div>
+            </div>
+            <%--</div>--%>
         </div>
+        <!-- End Main Page -->
+
     </div>
-    <div class="row">
-        <div class="col-lg-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span>传感器实时曲线</span>
-                    <a href="#" class="dropdown-toggle pull-right" data-toggle="dropdown">
-                        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>
-                    </a>
-                    <ul class="dropdown-menu pull-right">
-                        <li><a href="#" id="printMonitorChart">打印</a></li>
-                        <li><a href="#" id="exportMonitorChart">导出图像</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <div class="proccess" id="loading_line" style="display:block;height:301px;width:97%; margin-top:39px;margin-left:8px;"><b>正在加载中...请稍候</b></div>
-                    <div style="width:100%;height:300px;" id="monitor-line"></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span>传感器时均值柱状图(过去24小时)</span>
-                    <a href="#" class="dropdown-toggle pull-right" data-toggle="dropdown">
-                        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>
-                    </a>
-                    <ul class="dropdown-menu pull-right">
-                        <li><a href="#" id="printHourChart">打印</a></li>
-                        <li><a href="#" id="exportHourChart">导出图像</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <div class="proccess" id="loading_hline" style="display:block;height:301px;width:97%; margin-top:39px;margin-left:8px;"><b>正在加载中...请稍候</b></div>
-                    <div style="height:300px;" id="hour-line"></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span>传感器报警分析柱状图(1周)</span>
-                    <a href="#" class="dropdown-toggle pull-right" data-toggle="dropdown">
-                        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>
-                    </a>
-                    <ul class="dropdown-menu pull-right">
-                        <li><a href="#" id="printWarnColumn">打印</a></li>
-                        <li><a href="#" id="exportWarnColumn">导出图像</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <div class="proccess" id="loading_column" style="display:block;height:301px;width:97%; margin-top:39px;margin-left:8px;"><b>正在加载中...请稍候</b></div>
-                    <div style="height:300px;" id="warn-column"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<script type="text/javascript" src="<%=path %>/pages/main/js/main.js"></script>
+</div><!--/container-->
+<div class="clearfix"></div>
+
+<script>
+    var docs =
+        [{"path":"../../viwer3d/0/0.svf","name":"提篮拱桥1.3DS"}]
+    ;
+
+    var oViewer =null ;
+    $(document).ready (function () {
+        //var options ={ 'document': '', 'env': 'AutodeskProduction' } ;
+        var options ={ 'docid': docs [0].path, env: 'Local' } ;
+
+        //oViewer =new Autodesk.Viewing.Viewer3D ($("#viewer") [0], {}) ; // No toolbar
+        oViewer =new Autodesk.Viewing.Private.GuiViewer3D ($("#viewer") [0], {}) ; // With toolbar
+        // alert("111");
+        Autodesk.Viewing.Initializer (options, function () {
+            oViewer.initialize () ;
+            oViewer.addEventListener (Autodesk.Viewing.GEOMETRY_LOADED_EVENT, function (event) {
+                //oViewer.removeEventListener (Autodesk.Viewing.GEOMETRY_LOADED_EVENT, arguments.callee) ;
+                oViewer.fitToView (true) ;
+                setTimeout (function () { oViewer.autocam.setHomeViewFrom (oViewer.navigation.getCamera ()) ; }, 1000) ;
+            }) ;
+
+            oViewer.loadModel (options.docid) ;
+
+            var config = {extensions: [], modId:1};
+            var screenShot = new Autodesk.ADN.Viewing.Extension.ScreenShotManager(oViewer, config);
+            // 加载扩展内容
+            screenShot.load();
+        }) ;
+    }) ;
+
+
+
+    Highcharts.chart('chart1', {
+        chart: {
+            type: 'spline'
+        },
+        title: {
+            // text: 'Snow depth at Vikjafjellet, Norway'
+        },
+        subtitle: {
+            // text: 'Irregular time data in Highcharts JS'
+        },
+        xAxis: {
+            type: 'datetime',
+            dateTimeLabelFormats: { // don't display the dummy year
+                month: '%e. %b',
+                year: '%b'
+            },
+            title: {
+                text: 'Date'
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'Snow depth (m)'
+            },
+            min: 0
+        },
+        tooltip: {
+            headerFormat: '<b>{series.name}</b><br>',
+            pointFormat: '{point.x:%e. %b}: {point.y:.2f} m'
+        },
+
+        plotOptions: {
+            spline: {
+                marker: {
+                    enabled: true
+                }
+            }
+        },
+
+        colors: ['#6CF', '#39F', '#06C', '#036', '#000'],
+
+        // Define the data points. All series have a dummy year
+        // of 1970/71 in order to be compared on the same x axis. Note
+        // that in JavaScript, months start at 0 for January, 1 for February etc.
+        series: [{
+            name: "Winter 2014-2015",
+            data: [
+                [Date.UTC(1970, 10, 25), 0],
+                [Date.UTC(1970, 11,  6), 0.25],
+                [Date.UTC(1970, 11, 20), 1.41],
+                [Date.UTC(1970, 11, 25), 1.64],
+                [Date.UTC(1971, 0,  4), 1.6],
+                [Date.UTC(1971, 0, 17), 2.55],
+                [Date.UTC(1971, 0, 24), 2.62],
+                [Date.UTC(1971, 1,  4), 2.5],
+                [Date.UTC(1971, 1, 14), 2.42],
+                [Date.UTC(1971, 2,  6), 2.74],
+                [Date.UTC(1971, 2, 14), 2.62],
+                [Date.UTC(1971, 2, 24), 2.6],
+                [Date.UTC(1971, 3,  1), 2.81],
+                [Date.UTC(1971, 3, 11), 2.63],
+                [Date.UTC(1971, 3, 27), 2.77],
+                [Date.UTC(1971, 4,  4), 2.68],
+                [Date.UTC(1971, 4,  9), 2.56],
+                [Date.UTC(1971, 4, 14), 2.39],
+                [Date.UTC(1971, 4, 19), 2.3],
+                [Date.UTC(1971, 5,  4), 2],
+                [Date.UTC(1971, 5,  9), 1.85],
+                [Date.UTC(1971, 5, 14), 1.49],
+                [Date.UTC(1971, 5, 19), 1.27],
+                [Date.UTC(1971, 5, 24), 0.99],
+                [Date.UTC(1971, 5, 29), 0.67],
+                [Date.UTC(1971, 6,  3), 0.18],
+                [Date.UTC(1971, 6,  4), 0]
+            ]
+        }]
+    });
+
+    Highcharts.chart('chart2', {
+        chart: {
+            type: 'bar'
+        },
+        // title: {
+        //     // text: 'Historic World Population by Region'
+        // },
+        // subtitle: {
+        //     // text: 'Source: <a href="https://en.wikipedia.org/wiki/World_population">Wikipedia.org</a>'
+        // },
+        xAxis: {
+            categories: ['Africa', 'America', 'Asia', 'Europe', 'Oceania'],
+            title: {
+                text: null
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Population (millions)',
+                align: 'high',
+                offset: -30,
+                y: -10
+            },
+            labels: {
+                overflow: 'justify'
+            }
+        },
+        tooltip: {
+            valueSuffix: ' millions'
+        },
+        plotOptions: {
+            bar: {
+                dataLabels: {
+                    enabled: true
+                }
+            }
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -40,
+            y: 80,
+            floating: true,
+            borderWidth: 1,
+            backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+            shadow: true
+        },
+        credits: {
+            enabled: false
+        },
+        series: [{
+            name: 'Year 1800',
+            data: [107, 31, 635, 203, 2]
+        }, {
+            name: 'Year 1900',
+            data: [133, 156, 947, 408, 6]
+        }, {
+            name: 'Year 2000',
+            data: [814, 841, 3714, 727, 31]
+        }, {
+            name: 'Year 2016',
+            data: [1216, 1001, 4436, 738, 40]
+        }]
+    });
+</script>
+<!-- end: JavaScript-->
 </body>
 </html>
